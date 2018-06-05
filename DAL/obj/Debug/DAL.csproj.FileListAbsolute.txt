@@ -1,0 +1,16 @@
+E:\Git项目\MVC+EF\ProjectTemple\MVC_EF_Temple\DAL\bin\Debug\DAL.dll.config
+E:\Git项目\MVC+EF\ProjectTemple\MVC_EF_Temple\DAL\bin\Debug\DAL.dll
+E:\Git项目\MVC+EF\ProjectTemple\MVC_EF_Temple\DAL\bin\Debug\DAL.pdb
+E:\Git项目\MVC+EF\ProjectTemple\MVC_EF_Temple\DAL\bin\Debug\EntityFramework.dll
+E:\Git项目\MVC+EF\ProjectTemple\MVC_EF_Temple\DAL\bin\Debug\EntityFramework.SqlServer.dll
+E:\Git项目\MVC+EF\ProjectTemple\MVC_EF_Temple\DAL\bin\Debug\IDAL.dll
+E:\Git项目\MVC+EF\ProjectTemple\MVC_EF_Temple\DAL\bin\Debug\Model.dll
+E:\Git项目\MVC+EF\ProjectTemple\MVC_EF_Temple\DAL\bin\Debug\IDAL.pdb
+E:\Git项目\MVC+EF\ProjectTemple\MVC_EF_Temple\DAL\bin\Debug\Model.pdb
+E:\Git项目\MVC+EF\ProjectTemple\MVC_EF_Temple\DAL\bin\Debug\EntityFramework.xml
+E:\Git项目\MVC+EF\ProjectTemple\MVC_EF_Temple\DAL\bin\Debug\EntityFramework.SqlServer.xml
+E:\Git项目\MVC+EF\ProjectTemple\MVC_EF_Temple\DAL\bin\Debug\zh-Hans\EntityFramework.resources.dll
+E:\Git项目\MVC+EF\ProjectTemple\MVC_EF_Temple\DAL\bin\Debug\zh-Hans\EntityFramework.SqlServer.resources.dll
+E:\Git项目\MVC+EF\ProjectTemple\MVC_EF_Temple\DAL\obj\Debug\DAL.csprojResolveAssemblyReference.cache
+E:\Git项目\MVC+EF\ProjectTemple\MVC_EF_Temple\DAL\obj\Debug\DAL.dll
+E:\Git项目\MVC+EF\ProjectTemple\MVC_EF_Temple\DAL\obj\Debug\DAL.pdb

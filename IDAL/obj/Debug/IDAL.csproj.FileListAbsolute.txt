@@ -1,0 +1,10 @@
+E:\Git项目\MVC+EF\ProjectTemple\MVC_EF_Temple\IDAL\bin\Debug\IDAL.dll
+E:\Git项目\MVC+EF\ProjectTemple\MVC_EF_Temple\IDAL\bin\Debug\IDAL.pdb
+E:\Git项目\MVC+EF\ProjectTemple\MVC_EF_Temple\IDAL\bin\Debug\Model.dll
+E:\Git项目\MVC+EF\ProjectTemple\MVC_EF_Temple\IDAL\bin\Debug\EntityFramework.dll
+E:\Git项目\MVC+EF\ProjectTemple\MVC_EF_Temple\IDAL\bin\Debug\Model.pdb
+E:\Git项目\MVC+EF\ProjectTemple\MVC_EF_Temple\IDAL\bin\Debug\EntityFramework.xml
+E:\Git项目\MVC+EF\ProjectTemple\MVC_EF_Temple\IDAL\bin\Debug\zh-Hans\EntityFramework.resources.dll
+E:\Git项目\MVC+EF\ProjectTemple\MVC_EF_Temple\IDAL\obj\Debug\IDAL.csprojResolveAssemblyReference.cache
+E:\Git项目\MVC+EF\ProjectTemple\MVC_EF_Temple\IDAL\obj\Debug\IDAL.dll
+E:\Git项目\MVC+EF\ProjectTemple\MVC_EF_Temple\IDAL\obj\Debug\IDAL.pdb

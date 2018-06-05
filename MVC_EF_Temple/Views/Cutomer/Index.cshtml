@@ -1,0 +1,95 @@
+﻿@using Model.Sys
+@model List<Model.customer>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    body {
+        padding: 0;
+        margin: 0;
+        border: 0;
+        min-width: 1100px;
+        box-sizing: border-box;
+        font-size: 14px;
+    }
+</style>
+<h2>在线pdf预览</h2>
+<form>
+    <div>
+        <table id="dg"></table>
+        <br />
+    </div>
+</form>
+<script type="text/javascript">
+    function openviewer(url) {
+        if (url != '#') {
+            window.open('../Scripts/PDFJS/web/viewer.html?file=' + url, 'PDF', 'width:50%;height:50%;top:100;left:100;');
+        }
+    }
+    $(function () {
+        $(window).resize(function () {
+            $('#dg').datagrid('resize', {               //根据自身情况更改
+                width: $(window).width() - 300,    //根据自身情况更改
+                height: $(window).height() - 150  //根据自身情况更改
+            }).datagrid('resize', {
+                width: $(window).width() - 300,      //根据自身情况更改
+                height: $(window).height() - 150   //根据自身情况更改
+            });
+        });
+    });
+    /**
+     * easyui Datagrid百分比显示宽度
+     */
+    function fixWidth(percent) {
+        return document.body.clientWidth * percent;//根据自身情况更改
+    }
+
+    $(document).ready(function () {
+        $("#dg").datagrid({
+            url: '/Cutomer/GetList',
+            pagination: true, //显示分页
+            idField: 'CustomerID', //标识列，一般设为id，可能会区分大小写，大家注意一下
+            loadMsg: "正在努力为您加载数据", //加载数据时向用户展示的语句
+            fitColumns: true, //设置为true将自动使列适应表格宽度以防止出现水平滚动,false则自动匹配大小
+            striped: true, //奇偶行是否区分
+            singleSelect: true,//单选模式
+            sortName: "CustomerID", //初始化表格时依据的排序 字段 必须和数据库中的字段名称相同
+            sortOrder: "asc", //正序
+            nowrap: false,//允许换行
+            emptyMsg: '<span>无记录</span>',
+            rownumbers: false,
+            columns: [[
+                { field: 'CustomerID', title: 'ID', width: fixWidth(0.1), hidden: true },
+                { field: 'CompanyName', title: '公司名称', width: fixWidth(0.2) },
+                { field: 'ContactName', title: '联系人名称', width: fixWidth(0.2) },
+                { field: 'Country', title: '国家', width: fixWidth(0.2) },
+                {
+                    field: 'Url', title: '预览', align: 'left', width: fixWidth(0.3), sortable: true,
+                    formatter: function (value, index, row) {
+                        var a1 = "@ViewData["pdfPrefixUrl"]";
+                        if (value == null)
+                            return "";
+                        else
+                            return "<a href='javascript:;' onclick=openviewer('" + a1 + value + "')>浏览</a>";
+                    }
+                }
+            ]]
+        });
+        //设置分页控件
+        var p = $('#dg').datagrid('getPager');
+        $(p).pagination({
+            pageSize: 10,//每页显示的记录条数，默认为10
+            pageList: [10, 25, 100],//可以设置每页记录条数的列表
+            beforePageText: '第',//页数文本框前显示的汉字
+            afterPageText: '页    共 {pages} 页',
+            displayMsg: '当前显示 {from} - {to} 条记录   共 {total} 条记录',
+            /*onBeforeRefresh:function(){
+                $(this).pagination('loading');
+                alert('before refresh');
+                $(this).pagination('loaded');
+            }*/
+        });
+    });
+</script>

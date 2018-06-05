@@ -1,0 +1,10 @@
+E:\Git项目\MVC+EF\ProjectTemple\MVC_EF_Temple\IBLL\bin\Debug\IBLL.dll
+E:\Git项目\MVC+EF\ProjectTemple\MVC_EF_Temple\IBLL\bin\Debug\IBLL.pdb
+E:\Git项目\MVC+EF\ProjectTemple\MVC_EF_Temple\IBLL\bin\Debug\Model.dll
+E:\Git项目\MVC+EF\ProjectTemple\MVC_EF_Temple\IBLL\bin\Debug\EntityFramework.dll
+E:\Git项目\MVC+EF\ProjectTemple\MVC_EF_Temple\IBLL\bin\Debug\Model.pdb
+E:\Git项目\MVC+EF\ProjectTemple\MVC_EF_Temple\IBLL\bin\Debug\EntityFramework.xml
+E:\Git项目\MVC+EF\ProjectTemple\MVC_EF_Temple\IBLL\bin\Debug\zh-Hans\EntityFramework.resources.dll
+E:\Git项目\MVC+EF\ProjectTemple\MVC_EF_Temple\IBLL\obj\Debug\IBLL.csprojResolveAssemblyReference.cache
+E:\Git项目\MVC+EF\ProjectTemple\MVC_EF_Temple\IBLL\obj\Debug\IBLL.dll
+E:\Git项目\MVC+EF\ProjectTemple\MVC_EF_Temple\IBLL\obj\Debug\IBLL.pdb

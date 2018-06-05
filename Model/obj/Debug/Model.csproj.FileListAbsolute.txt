@@ -1,0 +1,11 @@
+E:\Git项目\MVC+EF\ProjectTemple\MVC_EF_Temple\Model\bin\Debug\Model.dll.config
+E:\Git项目\MVC+EF\ProjectTemple\MVC_EF_Temple\Model\bin\Debug\Model.dll
+E:\Git项目\MVC+EF\ProjectTemple\MVC_EF_Temple\Model\bin\Debug\Model.pdb
+E:\Git项目\MVC+EF\ProjectTemple\MVC_EF_Temple\Model\bin\Debug\EntityFramework.dll
+E:\Git项目\MVC+EF\ProjectTemple\MVC_EF_Temple\Model\bin\Debug\EntityFramework.SqlServer.dll
+E:\Git项目\MVC+EF\ProjectTemple\MVC_EF_Temple\Model\bin\Debug\EntityFramework.xml
+E:\Git项目\MVC+EF\ProjectTemple\MVC_EF_Temple\Model\bin\Debug\EntityFramework.SqlServer.xml
+E:\Git项目\MVC+EF\ProjectTemple\MVC_EF_Temple\Model\bin\Debug\zh-Hans\EntityFramework.resources.dll
+E:\Git项目\MVC+EF\ProjectTemple\MVC_EF_Temple\Model\bin\Debug\zh-Hans\EntityFramework.SqlServer.resources.dll
+E:\Git项目\MVC+EF\ProjectTemple\MVC_EF_Temple\Model\obj\Debug\Model.dll
+E:\Git项目\MVC+EF\ProjectTemple\MVC_EF_Temple\Model\obj\Debug\Model.pdb
