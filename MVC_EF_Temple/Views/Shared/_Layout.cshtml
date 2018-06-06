@@ -1,20 +1,18 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - 我的 ASP.NET 应用程序</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
-    <script src="~/Scripts/jquery-1.10.2.js"></script>
-    <script src="~/Scripts/bootstrap.js"></script>
-    <link href="~/Content/bootstrap.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-1.11.3.js"></script>
     <link href="~/Content/Site.css" rel="stylesheet" />
     <link href="~/Content/themes/default/easyui.css" rel="stylesheet" />
-    <script src="~/Scripts/jquery.easyui-1.3.6.js"></script>
-  
+    <link href="~/Content/themes/icon.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery.easyui-1.4.5.min.js"></script>
     <script src="~/Scripts/locale/easyui-lang-zh_CN.js"></script>
 </head>
 <body class="easyui-layout">
@@ -26,18 +24,18 @@
     <div data-options="region:'west',title:'west',split:true" style="width:207px;">
         <div class="easyui-accordion" style="width:200px;height:300px;">
             <div title="about" data-options="iconcls:'icon-ok'" style="overflow:auto;padding:10px;">
-                <h3 style="color:#0099ff;">accordion for jquery</h3>
-                <p>accordion is a part of easyui framework for jquery. it lets you define your accordion component on web page more easily.</p>
+                <h3 style="color:#0099ff;">标题1</h3>
+                <p>内容</p>
             </div>
-            <div title="help" data-options="iconcls:'icon-help'" style="padding:10px;">
-                <p>the accordion allows you to provide multiple panels and display one or more at a time. each panel has built-in support for expanding and collapsing. clicking on a panel header to expand or collapse that panel body. the panel content can be loaded via ajax by specifying a 'href' property. users can define a panel to be selected. if it is not specified, then the first panel is taken by default.</p>
-            </div>
+            @*<div title="help" data-options="iconcls:'icon-help'" style="padding:10px;">
+                    <p>the accordion allows you to provide multiple panels and display one or more at a time. each panel has built-in support for expanding and collapsing. clicking on a panel header to expand or collapse that panel body. the panel content can be loaded via ajax by specifying a 'href' property. users can define a panel to be selected. if it is not specified, then the first panel is taken by default.</p>
+                </div>*@
         </div>
     </div>
-    <div data-options="region:'center',title:'center title'" style="padding:5px;background:#eee;">
-        <div class="container-fluid body-content" id="MainBody">
-            @RenderBody()
-        </div>
+    <div data-options="region:'center',title:'center title'" style="padding:5px;">
+        @*<div class="container-fluid body-content" id="MainBody">*@
+        @RenderBody()
+        @*</div>*@
     </div>
 </body>
 </html>
