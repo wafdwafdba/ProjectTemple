@@ -6,11 +6,6 @@
 }
 <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
 <style>
-    .form-control {
-        padding: 0px;
-        font-size: 9px;
-        height: 30px;
-    }
 
     #table tr {
         /*height: 45px;*/
@@ -25,52 +20,6 @@
         padding: 3px;
     }
 
-    #tbInfo td {
-        width: 120px;
-    }
-
-    #tbInfo th {
-        width: 120px;
-        font-size: 11px;
-    }
-
-    #tbInfo input {
-        width: 140px;
-        font-size: 10px;
-    }
-
-    .vlad {
-        font-size: 9px !important;
-    }
-    /*.tbInfo td {
-            width: 120px;
-        }
-        .tbInfo td {
-            width: 120px;
-        }*/
-    .w30 {
-        width: 30px;
-    }
-
-    .w40 {
-        width: 40px;
-    }
-
-    .w50 {
-        width: 50px;
-    }
-
-    .w60 {
-        width: 60px;
-    }
-
-    .w80 {
-        width: 80px;
-    }
-
-    .w95 {
-        width: 95px;
-    }
 </style>
 @using (Html.BeginForm("Edit", "SqlServerSelect", @FormMethod.Post, new { id = "editForm", name = "editForm", @class = "formCommon addStaff" }))
 {
@@ -78,7 +27,7 @@
     @Html.ValidationSummary(true)
     @Html.HiddenFor(x=>x.IsDataColumn)
     <div>
-        <table>
+        <table >
             <tr><td colspan="6" style="color:blue"></td></tr>
             <tr><td>表名：</td>
             <td>@Html.TextBoxFor(Model => Model.TableName, new { @style = "width:200px",@Value= list1.Count>0? list1[0].TableName:"" })</td>
@@ -192,15 +141,16 @@
     </div>
     <div class="layui-layer-btn layui-layer-btn- td2" style="text-align:center !important;width:100%;">
         <a href="#" class="easyui-linkbutton" iconCls="icon-save" plain="true" onclick="Edit()">保存</a>
-        <a href="#" class="easyui-linkbutton Close" iconCls="icon-cancel" plain="true">关闭</a>
+        @*<a href="#" class="easyui-linkbutton Close" iconCls="icon-cancel" plain="true">关闭</a>*@
     </div>
 }
 
 <script type="text/javascript">
     $(function () {
-        $(".Close").click(function () {
-            window.close();
-        });
+        //$(".Close").click(function () {
+        //    //window.close();
+        //    closeDialog();
+        //});
         //克隆表格行
         $("#addrow").click(function () {
             var tr = $("#tableList tbody  tr:last");                                 //tabtr是你要克隆的表格行的id
@@ -226,7 +176,6 @@
     }
 
     function Edit() {
-        debugger;
         var Config = {};
         if ($("#TableName").val() == "")
         {
@@ -250,16 +199,11 @@
             async: false,
             data: { list: JSON.stringify(tableList), config: JSON.stringify(Config) },
             success: function (data) {
-                if (data.Flag == window.Constant.AjaxStatus.OK) {
-                    flag = true;
-                    alert(data.Message);
-                    return flag;
-                }
-                else {
-                    alert(data.Message);
-                    flag = false;
-                    return flag;
-                }
+                //self.opener.location.reload();
+                //alert(data.Message);
+                //window.close();
+                ShowMsg(data.Message)
+               
             }
         });
     }

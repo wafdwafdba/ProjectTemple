@@ -165,6 +165,18 @@ namespace MVC_EF_Temple.Controllers
             return View("~/Views/SqlServerSelect/Edit.cshtml");
         }
 
+        public JsonResult Delete(string tableName)
+        {
+            PostResult Result = new PostResult();
+            using (SqlConnection con = new SqlConnection(connectionString))
+            {
+                string query = $"drop table [{tableName.Trim()}]";
+                var result1 = con.Execute(query);
+            }
+            Result.Flag = FlagStatus.OK;
+            Result.Message ="删除成功！";
+            return Json(Result, JsonRequestBehavior.AllowGet);
+        }
         
 
         /// <summary>
@@ -180,6 +192,7 @@ namespace MVC_EF_Temple.Controllers
             PostResult Result = new PostResult();
             List<string> strCreateTable = new List<string>();
             List<string> strCreateComment = new List<string>();
+            var flag = false;
 
            // List = List.Where(t => t.IsDataColumn == true).ToList(); //过滤非数据库字段
             using (SqlConnection con = new SqlConnection(connectionString))
@@ -188,7 +201,8 @@ namespace MVC_EF_Temple.Controllers
                 var count1 = con.Query<int>(sql, new { });
                 if (count1.FirstOrDefault() > 0)
                 {
-                    string query = $"drop table {Config.TableName.Trim()}";
+                    flag = true;
+                    string query = $"drop table [{Config.TableName.Trim()}]";
                     var result1 = con.Execute(query);
                 }
 
@@ -210,18 +224,30 @@ namespace MVC_EF_Temple.Controllers
                 [CreateDate] [datetime] NULL,
                 [UpdateUser] [nvarchar] (50) COLLATE Chinese_PRC_CI_AS NULL,
                 [UpdateDate] [datetime] NULL,");
-                strCreateTable.Add($"PRIMARY KEY ( [{List[0].ColumnName}] ));\r\n");
+                if(List[0].NotNUll==true)
+                {
+                    strCreateTable.Add($"PRIMARY KEY ( [{List[0].ColumnName}] )");
+                }
+                strCreateTable.Add($");\r\n");
                 strCreateComment.Add($@"EXEC sp_addextendedproperty N'MS_Description', N'时间戳', 'SCHEMA', N'dbo', 'TABLE', N'{Config.TableName}', 'COLUMN', N'Timestamp' 
                 EXEC sp_addextendedproperty N'MS_Description', N'创建人', 'SCHEMA', N'dbo', 'TABLE', N'{Config.TableName}', 'COLUMN', N'CreateUser' 
                 EXEC sp_addextendedproperty N'MS_Description', N'创建时间', 'SCHEMA', N'dbo', 'TABLE', N'{Config.TableName}', 'COLUMN', N'CreateDate' 
                 EXEC sp_addextendedproperty N'MS_Description', N'修改人', 'SCHEMA', N'dbo', 'TABLE', N'{Config.TableName}', 'COLUMN', N'UpdateUser' 
                 EXEC sp_addextendedproperty N'MS_Description', N'修改时间', 'SCHEMA', N'dbo', 'TABLE', N'{Config.TableName}', 'COLUMN', N'UpdateDate' ");
 
-                con.Execute(string.Join("", strCreateTable));
-                con.Execute(string.Join("", strCreateComment));
+                try
+                {
+                    con.Execute(string.Join("", strCreateTable));
+                    con.Execute(string.Join("", strCreateComment));
+                }
+                catch (Exception)
+                {
+                    Result.Message = flag == false ? "新增失败！" : "编辑失败！";
+                }
+              
             }
             Result.Flag = FlagStatus.OK;
-            Result.Message = "新增成功！";
+            Result.Message = flag==false?"新增成功！":"编辑成功！";
             return Json(Result);
         }
 

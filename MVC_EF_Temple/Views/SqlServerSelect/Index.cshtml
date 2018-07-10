@@ -21,7 +21,7 @@
     <div style="margin-bottom:5px">
         <a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" id="add">新增</a>
         <a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" id="edit">修改</a>
-        <a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="javascript:alert('Save')">删除</a>
+        <a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" id="del">删除</a>
     </div>
 </div>
 <table id="dg" class="easyui-datagrid" title="数据库表查询" style="height:auto"> </table>
@@ -39,6 +39,10 @@
         });
 
     });
+
+   
+
+
     $(function () {
         ///加载datagrid
         $("#dg").datagrid({
@@ -75,8 +79,9 @@
         //新增
         $("#add").click(function () {
                 strTitle = "新增";
-                strUrl = 'SqlServerSelect/Edit?TableName=';
-                window.open(strUrl, strTitle, "dialogWith=800px;dialogheight=500px;help:no;status=no");
+                strUrl = '/SqlServerSelect/Edit?TableName=';
+            //window.open(strUrl, strTitle, "dialogWith=800px;dialogheight=500px;help:no;status=no");
+                showMessageDialog(strUrl, strTitle, "800px", "500px", true)
         });
 
         //编辑
@@ -85,8 +90,9 @@
             if (row!=null && row.TableName.length > 0)
             {
                 strTitle = "修改";
-                strUrl = 'SqlServerSelect/Edit?TableName=' + row.TableName;
-                window.open(strUrl, strTitle, "dialogWith=800px;dialogheight=500px;help:no;status=no");
+                strUrl = '/SqlServerSelect/Edit?TableName=' + row.TableName;
+                showMessageDialog(strUrl, strTitle,"800px","500px",true)
+                //window.open(strUrl, strTitle, "dialogWith=800px;dialogheight=500px;help:no;status=no");
             }
             else
             {
@@ -94,5 +100,28 @@
             }
         });
 
+        //删除表
+        $("#del").click(function () {
+            var row = $('#dg').datagrid('getSelected');
+            if (row == null && row.TableName.length == 0) {
+                alert("请选择一条数据");
+                return false;
+            }
+            if (confirm("确认删除吗")) {
+                $.ajax({
+                    url: "/SqlServerSelect/Delete?tableName=" + row.TableName,
+                    type: "get",
+                    async: false,
+                    success: function (data) {
+                        //$('#dg').datagrid('reload');
+                        //alert(data.Message);
+                        ShowMsg(data.Message);
+                    }
+                });
+            }
+            
+        })
     });
+
+    
 </script>
