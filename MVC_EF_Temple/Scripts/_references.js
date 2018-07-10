@@ -1,5 +1,6 @@
 ﻿/// <autosync enabled="true" />
 /// <reference path="bootstrap.js" />
+/// <reference path="common.js" />
 /// <reference path="easyloader.js" />
 /// <reference path="jquery.easyui.mobile-1.4.5.min.js" />
 /// <reference path="jquery.easyui-1.4.5.min.js" />

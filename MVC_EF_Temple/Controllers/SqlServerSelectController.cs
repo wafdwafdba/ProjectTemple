@@ -1,6 +1,8 @@
 ﻿using Dapper;
 using IBLL;
 using MVC_EF_Temple.BaseCore;
+using MVC_EF_Temple.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -23,7 +25,7 @@ namespace MVC_EF_Temple.Controllers
             return View();
         }
 
-        public JsonResult GetList(GridPager pager)
+        public JsonResult GetList(GridPager pager, string name)
         {
             int pagesize = pager.rows;//获取每页显示多少条记录
             int pagenum = pager.page;//获取当前页码
@@ -58,14 +60,19 @@ namespace MVC_EF_Temple.Controllers
                                         AND ( o.type = 'U'
                                               OR o.type = 'S'
                                             )
-                                GROUP BY o.object_id ,
+                                ";
+                if (!string.IsNullOrEmpty(name))
+                {
+                    sql += $" and (o.name like '%{name}%' or CAST(ep.value AS NVARCHAR(MAX)) like '%{name}%') ";
+                }
+
+                sql += @"GROUP BY o.object_id ,
                                         o.name ,
                                         o.create_date ,
                                         o.modify_date ,
                                         ep.value
-                                ORDER BY o.name";
-
-                list = list1= con.Query<AllTable>(sql).ToList();
+                                ORDER BY o.create_date desc";
+                list = list1 = con.Query<AllTable>(sql).ToList();
             }
 
             var UIPages = new
@@ -77,7 +84,151 @@ namespace MVC_EF_Temple.Controllers
 
             return Json(UIPages, JsonRequestBehavior.AllowGet);
         }
+
+        public ActionResult Edit(string TableName)
+        {
+            var strExclude = new string[] { "Timestamp", "SchoolID", "CreateUser", "CreateDate", "UpdateUser", "UpdateDate" };
+            List<table_cto> List = new List<table_cto>();
+            using (SqlConnection con = new SqlConnection(connectionString))
+            {
+                string strSQL = $@"  SELECT  '{TableName}' AS TableName,
+                                        a1.TableComment,
+                                        c.name AS ColumnName ,
+                                        c.column_id  AS ColumsID,
+                                        t.name AS TypeName ,
+                                        c.max_length AS MaxLength ,
+                                        c.precision AS Precision,
+                                        c.scale AS Scale,
+                                        c.collation_name ,
+                                        c.is_xml_document ,
+                                        CAST(CASE WHEN ( do.parent_object_id = 0 ) THEN 1
+                                                  ELSE 0
+                                             END AS BIT) AS is_default_binding ,
+                                        o3.name rule_name ,
+                                        c.is_sparse ,
+                                        c.is_column_set ,
+                                        c.is_filestream ,
+                                        CAST(ep.value AS NVARCHAR(MAX)) AS Comment,
+                                        CAST(CASE WHEN c.is_nullable=0 THEN 1 ELSE 0 END AS BIT) AS NotNUll,
+                                        1 AS IsCheck,
+                                        1 AS IsDataColumn
+                                FROM    sys.all_columns c
+                                        LEFT JOIN sys.all_objects o ON c.object_id = o.object_id
+                                        LEFT JOIN sys.schemas s ON o.schema_id = s.schema_id
+                                        LEFT JOIN sys.types t ON c.user_type_id = t.user_type_id
+                                        LEFT JOIN sys.all_objects do ON c.default_object_id = do.object_id
+                                        LEFT JOIN sys.default_constraints dc ON c.default_object_id = dc.object_id
+                                        LEFT JOIN sys.all_objects o3 ON c.rule_object_id = o3.object_id
+                                        LEFT JOIN sys.identity_columns id ON c.object_id = id.object_id
+                                                                             AND c.column_id = id.column_id
+                                        LEFT JOIN sys.computed_columns cc ON c.object_id = cc.object_id
+                                                                             AND c.column_id = cc.column_id
+                                        LEFT JOIN sys.extended_properties ep ON ( c.object_id = ep.major_id
+                                                                                  AND ep.class = 1
+                                                                                  AND c.column_id = ep.minor_id
+                                                                                  AND ep.name = 'MS_Description'
+                                                                                )
+                                        OUTER APPLY(
+										  SELECT isnull(CONVERT(VARCHAR(max),g.value),'-') AS TableComment,a.name
+											FROM  sys.tables a 
+											INNER JOIN sys.schemas ss ON ss.schema_id = a.schema_id
+											LEFT join sys.extended_properties g  on a.object_id = g.major_id AND g.minor_id = 0
+											WHERE a.name=N'{TableName}'
+										) a1
+                                WHERE   s.name = N'dbo'
+                                        AND o.type IN ( 'U', 'S', 'V' )
+                                        AND o.name = N'{TableName}'
+                                        AND c.name Not IN('{ string.Join("','", strExclude)}')
+                                        ORDER BY c.column_id;";
+                List = con.Query<table_cto>(strSQL).ToList();
+            }
+            foreach (var item in List)
+            {
+                switch (item.TypeName)
+                {
+                    case "nvarchar":
+                        item.MaxLength = (int.Parse(item.MaxLength) / 2).ToString();
+                        break;
+
+                    case "decimal":
+                        item.MaxLength = $"({item.Precision},{item.Scale})";
+                        break;
+
+                    default:
+                        item.MaxLength = string.Empty;
+                        break;
+                }
+            }
+            ViewBag.list = List;
+
+
+            return View("~/Views/SqlServerSelect/Edit.cshtml");
+        }
+
+        
+
+        /// <summary>
+        /// 保存
+        /// </summary>
+        /// <param name="List"></param>
+        /// <returns></returns>
+        public JsonResult Savings(string list, string config)
+        {
+            List<Table> List= JsonConvert.DeserializeObject<List<Table>>(list);
+            ConfigInfo Config= JsonConvert.DeserializeObject<ConfigInfo>(config);
+
+            PostResult Result = new PostResult();
+            List<string> strCreateTable = new List<string>();
+            List<string> strCreateComment = new List<string>();
+
+           // List = List.Where(t => t.IsDataColumn == true).ToList(); //过滤非数据库字段
+            using (SqlConnection con = new SqlConnection(connectionString))
+            {
+                var sql=$"SELECT  COUNT(1) FROM dbo.SysObjects WHERE ID = object_id(N'[{Config.TableName.Trim()}]')";
+                var count1 = con.Query<int>(sql, new { });
+                if (count1.FirstOrDefault() > 0)
+                {
+                    string query = $"drop table {Config.TableName.Trim()}";
+                    var result1 = con.Execute(query);
+                }
+
+                strCreateTable.Add($"CREATE TABLE [dbo].[{Config.TableName.Trim()}](");
+                strCreateComment.Add($"EXEC sp_addextendedproperty N'MS_Description', N'{Config.TableComment}', 'SCHEMA', N'dbo', 'TABLE', N'{Config.TableName}', NULL, NULL; ");
+                foreach (var item in List)
+                {
+                    string length = item.TypeName.Contains("varchar") ? $"({item.MaxLength.ToString()})" : "";
+                    strCreateTable.Add(string.Format($"[{item.ColumnName.Trim()}] {item.TypeName}{{0}} {{1}} {{2}},",
+                        length,
+                        item.NotNUll ? "Not Null" : "Null",
+                        item.DefaultValue?.Length > 0 ? $"'{item.DefaultValue}'" : ""
+                        ));
+                    strCreateComment.Add($"EXEC sp_addextendedproperty N'MS_Description', N'{item.Comment}', 'SCHEMA', N'dbo', 'TABLE', N'{Config.TableName.Trim()}', 'COLUMN', N'{item.ColumnName.Trim()}'; ");
+                }
+              
+                strCreateTable.Add(@"[Timestamp] [timestamp] NULL,
+                [CreateUser] [nvarchar] (50) COLLATE Chinese_PRC_CI_AS NULL,
+                [CreateDate] [datetime] NULL,
+                [UpdateUser] [nvarchar] (50) COLLATE Chinese_PRC_CI_AS NULL,
+                [UpdateDate] [datetime] NULL,");
+                strCreateTable.Add($"PRIMARY KEY ( [{List[0].ColumnName}] ));\r\n");
+                strCreateComment.Add($@"EXEC sp_addextendedproperty N'MS_Description', N'时间戳', 'SCHEMA', N'dbo', 'TABLE', N'{Config.TableName}', 'COLUMN', N'Timestamp' 
+                EXEC sp_addextendedproperty N'MS_Description', N'创建人', 'SCHEMA', N'dbo', 'TABLE', N'{Config.TableName}', 'COLUMN', N'CreateUser' 
+                EXEC sp_addextendedproperty N'MS_Description', N'创建时间', 'SCHEMA', N'dbo', 'TABLE', N'{Config.TableName}', 'COLUMN', N'CreateDate' 
+                EXEC sp_addextendedproperty N'MS_Description', N'修改人', 'SCHEMA', N'dbo', 'TABLE', N'{Config.TableName}', 'COLUMN', N'UpdateUser' 
+                EXEC sp_addextendedproperty N'MS_Description', N'修改时间', 'SCHEMA', N'dbo', 'TABLE', N'{Config.TableName}', 'COLUMN', N'UpdateDate' ");
+
+                con.Execute(string.Join("", strCreateTable));
+                con.Execute(string.Join("", strCreateComment));
+            }
+            Result.Flag = FlagStatus.OK;
+            Result.Message = "新增成功！";
+            return Json(Result);
+        }
+
     }
+
+
+
 
     /// <summary>
     /// 数据库表查询

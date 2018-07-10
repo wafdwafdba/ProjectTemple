@@ -145,6 +145,9 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\ConfigInfo.cs" />
+    <Compile Include="Models\Table.cs" />
+    <Compile Include="Models\table_cto.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -500,6 +503,7 @@
     </Content>
     <Content Include="Content\themes\material\images\Thumbs.db" />
     <None Include="Scripts\jquery-1.11.3.intellisense.js" />
+    <Content Include="Scripts\Common.js" />
     <Content Include="Scripts\easyloader.js" />
     <Content Include="Scripts\jquery-1.11.3.js" />
     <Content Include="Scripts\jquery-1.11.3.min.js" />
@@ -918,10 +922,11 @@
     <Content Include="Scripts\PDFJS\web\locale\zh-TW\viewer.properties" />
     <Content Include="Scripts\PDFJS\web\locale\zu\viewer.properties" />
     <Content Include="Views\SqlServerSelect\Index.cshtml" />
+    <Content Include="Views\SqlServerSelect\Edit.cshtml" />
+    <Content Include="Views\Shared\_LayoutEdit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

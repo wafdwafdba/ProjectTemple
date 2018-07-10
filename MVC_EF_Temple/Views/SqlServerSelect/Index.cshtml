@@ -5,15 +5,27 @@
 
 <style>
     .datagrid-pager table {
-     width:30%!important;
-     margin-left:500px!important;
-    }
-    .pagination .pagination-num {
-    height: 18px!important;
+        width: 30% !important;
+        margin-left: 500px !important;
     }
 
+    .pagination .pagination-num {
+        height:auto;
+    }
 </style>
-<table id="dg" class="easyui-datagrid" title="数据库表查询" style="height:850px"> </table>
+<div id="tb" style="padding:5px;height:auto">
+    <div>
+        表名/表描述： <input id="name" type="text" placeholder="请输入表名或者表描述" style="width:180px">
+        <a href="#" class="easyui-linkbutton" iconCls="icon-search" id="search">查询</a>
+    </div>
+    <div style="margin-bottom:5px">
+        <a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" id="add">新增</a>
+        <a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" id="edit">修改</a>
+        <a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="javascript:alert('Save')">删除</a>
+    </div>
+</div>
+<table id="dg" class="easyui-datagrid" title="数据库表查询" style="height:auto"> </table>
+
 <script type="text/javascript">
     $(function () {
         $(window).resize(function () {
@@ -27,32 +39,13 @@
         });
 
     });
-
-    function JsonDateFormate(val) {
-
-        if (val != null) {
-            var date = new Date(parseInt(val.replace("/Date(", "").replace(")/", ""), 10));
-            //月份为0-11，所以+1，月份小于10时补个0
-            var month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
-            var currentDate = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
-            return date.getFullYear() + "-" + month + "-" + currentDate;
-        }
-
-        return "";
-    }
-    /**
-     * easyui Datagrid百分比显示宽度
-     */
-    function fixWidth(percent) {
-        return document.body.clientWidth * percent;//根据自身情况更改
-    }
-
-    $(document).ready(function () {
+    $(function () {
+        ///加载datagrid
         $("#dg").datagrid({
             url: '/SqlServerSelect/GetList',
             pagination: true,//分页控件
             pageList: [10, 20, 30, 40, 50],
-           // fit: true,   //自适应大小
+            // fit: true,   //自适应大小
             idField: 'TableID', //标识列，一般设为id，可能会区分大小写，大家注意一下
             fitColumns: true, //设置为true将自动使列适应表格宽度以防止出现水平滚动,false则自动匹配大小
             striped: true, //奇偶行是否区分
@@ -68,8 +61,38 @@
                 { field: 'CreateDate', title: '创建时间', width: fixWidth(0.2), align: 'center', formatter: JsonDateFormate },
                 { field: 'ModifyDate', title: '修改时间', width: fixWidth(0.2), align: 'center', formatter: JsonDateFormate },
                 { field: 'Comment', title: '表描述', width: fixWidth(0.2) },
-                { field: 'FieldCount', title: '表数量', width: fixWidth(0.2) }
+                { field: 'FieldCount', title: '表字段数量', width: fixWidth(0.2) }
             ]]
         });
+
+        //查询
+        $("#search").click(function () {
+            $('#dg').datagrid('load', {
+                name: $('#name').val()
+            });
+        });
+
+        //新增
+        $("#add").click(function () {
+                strTitle = "新增";
+                strUrl = 'SqlServerSelect/Edit?TableName=';
+                window.open(strUrl, strTitle, "dialogWith=800px;dialogheight=500px;help:no;status=no");
+        });
+
+        //编辑
+        $("#edit").click(function () {
+            var row = $('#dg').datagrid('getSelected');
+            if (row!=null && row.TableName.length > 0)
+            {
+                strTitle = "修改";
+                strUrl = 'SqlServerSelect/Edit?TableName=' + row.TableName;
+                window.open(strUrl, strTitle, "dialogWith=800px;dialogheight=500px;help:no;status=no");
+            }
+            else
+            {
+                alert("请选择一条数据");
+            }
+        });
+
     });
 </script>

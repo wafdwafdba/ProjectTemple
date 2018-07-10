@@ -36,3 +36,6 @@ E:\Git项目\ProjectTemple\BLLContainer\bin\Debug\DAL.pdb
 E:\Git项目\ProjectTemple\BLLContainer\obj\Debug\BLLContainer.csprojResolveAssemblyReference.cache
 E:\Git项目\ProjectTemple\BLLContainer\obj\Debug\BLLContainer.dll
 E:\Git项目\ProjectTemple\BLLContainer\obj\Debug\BLLContainer.pdb
+E:\Git项目\ProjectTemple\BLLContainer\bin\Debug\EntityFramework.dll
+E:\Git项目\ProjectTemple\BLLContainer\bin\Debug\EntityFramework.xml
+E:\Git项目\ProjectTemple\BLLContainer\bin\Debug\zh-Hans\EntityFramework.resources.dll

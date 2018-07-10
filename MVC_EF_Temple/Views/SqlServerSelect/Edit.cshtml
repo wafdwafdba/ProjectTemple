@@ -1,0 +1,294 @@
+﻿@model MVC_EF_Temple.Models.table_cto
+@{
+    ViewBag.Title = "Edit";
+    Layout = "~/Views/Shared/_LayoutEdit.cshtml";
+    var list1 = ViewBag.list as List<MVC_EF_Temple.Models.table_cto>;
+}
+<link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+<style>
+    .form-control {
+        padding: 0px;
+        font-size: 9px;
+        height: 30px;
+    }
+
+    #table tr {
+        /*height: 45px;*/
+    }
+
+    #table td {
+        padding: 3px;
+    }
+
+    #table th {
+        font-size: 6px;
+        padding: 3px;
+    }
+
+    #tbInfo td {
+        width: 120px;
+    }
+
+    #tbInfo th {
+        width: 120px;
+        font-size: 11px;
+    }
+
+    #tbInfo input {
+        width: 140px;
+        font-size: 10px;
+    }
+
+    .vlad {
+        font-size: 9px !important;
+    }
+    /*.tbInfo td {
+            width: 120px;
+        }
+        .tbInfo td {
+            width: 120px;
+        }*/
+    .w30 {
+        width: 30px;
+    }
+
+    .w40 {
+        width: 40px;
+    }
+
+    .w50 {
+        width: 50px;
+    }
+
+    .w60 {
+        width: 60px;
+    }
+
+    .w80 {
+        width: 80px;
+    }
+
+    .w95 {
+        width: 95px;
+    }
+</style>
+@using (Html.BeginForm("Edit", "SqlServerSelect", @FormMethod.Post, new { id = "editForm", name = "editForm", @class = "formCommon addStaff" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(x=>x.IsDataColumn)
+    <div>
+        <table>
+            <tr><td colspan="6" style="color:blue"></td></tr>
+            <tr><td>表名：</td>
+            <td>@Html.TextBoxFor(Model => Model.TableName, new { @style = "width:200px",@Value= list1.Count>0? list1[0].TableName:"" })</td>
+            <td></td>
+            <td >表描述：</td>
+            <td>@Html.TextBoxFor(Model => Model.TableComment, new { @style = "width:200px", @Value = list1.Count > 0 ? list1[0].TableComment:"" })</td>
+            <td></td>
+            </tr>
+            <tr><td colspan="6" ><a id="addrow" class="glyphicon glyphicon-plus" aria-hidden="true" href="javascript:;" ></a></td></tr>
+        </table>
+
+        <table id="tableList">
+            
+            <thead>
+                <tr>
+                    <th class="w50">操作</th>
+                    <th>字段</th>
+                    <th>注释</th>
+                    <th>类型(只列出来部分常用数据类型)</th>
+                    <th>长度</th>
+                    <th>非空</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr id="tabtr" style="display:none">
+                    <td>
+                        <a class="glyphicon glyphicon-minus" aria-hidden="true" href="javascript:;" onclick="delRow(this)"></a>
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(Model => Model.ColumnName, new { @style = "width:200px" })
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(Model => Model.Comment, new { @style = "width:200px" })
+                    </td>
+                    <td>
+                        @*@Html.TextBoxFor(Model => Model.TypeName, new { @style = "width:200px" })*@
+                        <select id="TypeName">
+                            <option value="">请选择</option>
+                            <option value="bigint">bigint</option>
+                            <option value="bit" >bit</option>
+                            <option value="char">char</option>
+                            <option value="data" >data</option>
+                            <option value="datetime" >datetime</option>
+                            <option value="int" >int</option>
+                            <option value="nvarchar" >nvarchar</option>
+                            <option value="image" >image</option>
+                            <option value="decimal" >decimal</option>
+                            <option value="text" >text</option>
+                            <option value="uniqueidentifier">uniqueidentifier</option>
+                            <option value="varchar" >varchar</option>
+                            <option value="float" >float</option>
+                        </select>
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(Model => Model.MaxLength, new { @style = "width:200px" })
+                    </td>
+                    <td>
+                        @Html.CheckBox("NotNUll",false, new { @style = "width:auto;vertical-align:top;margin - right:5px;" })
+                    </td>
+                </tr>
+                @if (list1.Count > 0)
+                {
+                       
+                    foreach (var item in list1)
+                    {
+                    <tr >
+                        <td>
+                            <a class="glyphicon glyphicon-minus" aria-hidden="true" href="javascript:;" onclick="delRow(this)"></a>
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(Model => Model.ColumnName, new { @style = "width:200px", Value = item.ColumnName })
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(Model => Model.Comment, new { @style = "width:200px", Value = item.Comment })
+                        </td>
+                        <td>
+                            @*@Html.TextBoxFor(Model => Model.TypeName, new { @style = "width:200px", Value = item.TypeName })*@
+                            <select id="TypeName">
+                                <option value="">请选择</option>
+                                <option value="bigint" @(item.TypeName== "bigint" ? "selected":"")>bigint</option>
+                                <option value="bit" @(item.TypeName== "bit" ? "selected":"")>bit</option>
+                                <option value="char" @(item.TypeName== "char" ? "selected":"")>char</option>
+                                <option value="data" @(item.TypeName== "data" ? "selected":"")>data</option>
+                                <option value="datetime" @(item.TypeName== "datetime" ? "selected":"")>datetime</option>
+                                <option value="int" @(item.TypeName== "int" ? "selected":"")>int</option>
+                                <option value="nvarchar" @(item.TypeName== "nvarchar" ? "selected":"")>nvarchar</option>
+                                <option value="image" @(item.TypeName== "image" ? "selected":"")>image</option>
+                                <option value="decimal" @(item.TypeName== "decimal" ? "selected":"")>decimal</option>
+                                <option value="text" @(item.TypeName== "text" ? "selected":"")>text</option>
+                                <option value="uniqueidentifier" @(item.TypeName== "uniqueidentifier" ? "selected":"")>uniqueidentifier</option>
+                                <option value="varchar" @(item.TypeName== "varchar" ? "selected":"")>varchar</option>
+                                <option value="float" @(item.TypeName== "float" ? "selected":"")>float</option>
+                            </select>
+
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(Model => Model.MaxLength, new { @style = "width:200px", Value = item.MaxLength })
+                        </td>
+                        <td>
+                            @{
+                                var IsChecked = item.NotNUll;
+                            }
+                            @Html.CheckBox("NotNUll", IsChecked == true, new { @Value = @IsChecked, @style = "width:auto;vertical-align:top;margin - right:5px;" })
+                        </td>
+                    </tr>
+                    }
+                  }
+
+            </tbody>
+        </table>
+    </div>
+    <div class="layui-layer-btn layui-layer-btn- td2" style="text-align:center !important;width:100%;">
+        <a href="#" class="easyui-linkbutton" iconCls="icon-save" plain="true" onclick="Edit()">保存</a>
+        <a href="#" class="easyui-linkbutton Close" iconCls="icon-cancel" plain="true">关闭</a>
+    </div>
+}
+
+<script type="text/javascript">
+    $(function () {
+        $(".Close").click(function () {
+            window.close();
+        });
+        //克隆表格行
+        $("#addrow").click(function () {
+            var tr = $("#tableList tbody  tr:last");                                 //tabtr是你要克隆的表格行的id
+            var newtr = tr.clone();   //克隆tr行
+            newtr.css("display", "");
+            newtr.find(":input").each(function (i) {      //循环新克隆的newtr，在里边找到所有的input标签，
+                $(this).val("");                                    //给该标签的value赋值为空
+            });
+            tr.after(newtr);                   //在id="tabtr"的表格行tr后插入克隆行newtr
+        });
+
+    });
+
+    //删除表格行
+    function delRow(nowTr) {
+        var index = $(nowTr).parent().parent().attr("data-index");
+        if (index!=1) {
+            $(nowTr).parent().parent().remove();
+        } else {
+            alert("表格第一行不能删除！");
+        }
+       
+    }
+
+    function Edit() {
+        debugger;
+        var Config = {};
+        if ($("#TableName").val() == "")
+        {
+            alert("表名必填.");
+            return false;
+        }
+
+        Config.TableName = $("#TableName").val();
+        Config.TableComment = $("#TableComment").val();
+
+        var tableList = getList();
+        if (tableList.length == 0)
+        {
+            alert("请至少录入一个字段.");
+            return false;
+        }
+
+        $.ajax({
+            url: "/SqlServerSelect/Savings",
+            type: "POST",
+            async: false,
+            data: { list: JSON.stringify(tableList), config: JSON.stringify(Config) },
+            success: function (data) {
+                if (data.Flag == window.Constant.AjaxStatus.OK) {
+                    flag = true;
+                    alert(data.Message);
+                    return flag;
+                }
+                else {
+                    alert(data.Message);
+                    flag = false;
+                    return flag;
+                }
+            }
+        });
+    }
+
+   
+    //获取list
+    function getList() {
+        var arr = [];
+        var index = 1;
+        $("#tableList tbody tr:gt(0)").each(function () {
+            var columnName=$(this).find("#ColumnName").val();
+            var typeName=$(this).find("#TypeName").val();
+
+            if (columnName == "")
+            {
+                alert("第"+index+"行字段名称为空，请添加完在保存");
+                return false;
+            }
+            if (typeName == "") {
+                alert("第" + index + "行字段类型为空，请添加完在保存");
+                return false;
+            }
+            if (columnName != "" && typeName != "")
+            {
+                arr.push({ ColumnName: columnName, Comment: $(this).find("#Comment").val(), TypeName: typeName, MaxLength: $(this).find("#MaxLength").val(), NotNUll: $(this).find("#NotNUll")[0].checked });
+            }
+            
+            index++;
+        });
+        return arr;
+    }
+</script>
