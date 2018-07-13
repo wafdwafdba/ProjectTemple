@@ -87,7 +87,7 @@ namespace MVC_EF_Temple.Controllers
 
         public ActionResult Edit(string TableName)
         {
-            var strExclude = new string[] { "Timestamp", "SchoolID", "CreateUser", "CreateDate", "UpdateUser", "UpdateDate" };
+            var strExclude = new string[] { "Timestamp",  "CreateUser", "CreateDate", "UpdateUser", "UpdateDate" };
             List<table_cto> List = new List<table_cto>();
             using (SqlConnection con = new SqlConnection(connectionString))
             {
@@ -242,6 +242,7 @@ namespace MVC_EF_Temple.Controllers
                 }
                 catch (Exception)
                 {
+                    Result.Flag = FlagStatus.NO;
                     Result.Message = flag == false ? "新增失败！" : "编辑失败！";
                 }
               
@@ -251,10 +252,152 @@ namespace MVC_EF_Temple.Controllers
             return Json(Result);
         }
 
+
+        public ActionResult ShowContent(string TableName,string Code)
+        {
+            string Content = "";
+            List<table_cto> List = new List<table_cto>();
+            var strExclude = new string[] { "Timestamp", "CreateUser", "CreateDate", "UpdateUser", "UpdateDate" };
+            using (SqlConnection con = new SqlConnection(connectionString))
+            {
+
+            #region 查询字段list
+                string strSQL = $@"  SELECT  '{TableName}' AS TableName,
+                                        a1.TableComment,
+                                        c.name AS ColumnName ,
+                                        c.column_id  AS ColumsID,
+                                        t.name AS TypeName ,
+                                        c.max_length AS MaxLength ,
+                                        c.precision AS Precision,
+                                        c.scale AS Scale,
+                                        c.collation_name ,
+                                        c.is_xml_document ,
+                                        CAST(CASE WHEN ( do.parent_object_id = 0 ) THEN 1
+                                                  ELSE 0
+                                             END AS BIT) AS is_default_binding ,
+                                        o3.name rule_name ,
+                                        c.is_sparse ,
+                                        c.is_column_set ,
+                                        c.is_filestream ,
+                                        CAST(ep.value AS NVARCHAR(MAX)) AS Comment,
+                                        CAST(CASE WHEN c.is_nullable=0 THEN 1 ELSE 0 END AS BIT) AS NotNUll,
+                                        1 AS IsCheck,
+                                        1 AS IsDataColumn
+                                FROM    sys.all_columns c
+                                        LEFT JOIN sys.all_objects o ON c.object_id = o.object_id
+                                        LEFT JOIN sys.schemas s ON o.schema_id = s.schema_id
+                                        LEFT JOIN sys.types t ON c.user_type_id = t.user_type_id
+                                        LEFT JOIN sys.all_objects do ON c.default_object_id = do.object_id
+                                        LEFT JOIN sys.default_constraints dc ON c.default_object_id = dc.object_id
+                                        LEFT JOIN sys.all_objects o3 ON c.rule_object_id = o3.object_id
+                                        LEFT JOIN sys.identity_columns id ON c.object_id = id.object_id
+                                                                             AND c.column_id = id.column_id
+                                        LEFT JOIN sys.computed_columns cc ON c.object_id = cc.object_id
+                                                                             AND c.column_id = cc.column_id
+                                        LEFT JOIN sys.extended_properties ep ON ( c.object_id = ep.major_id
+                                                                                  AND ep.class = 1
+                                                                                  AND c.column_id = ep.minor_id
+                                                                                  AND ep.name = 'MS_Description'
+                                                                                )
+                                        OUTER APPLY(
+										  SELECT isnull(CONVERT(VARCHAR(max),g.value),'-') AS TableComment,a.name
+											FROM  sys.tables a 
+											INNER JOIN sys.schemas ss ON ss.schema_id = a.schema_id
+											LEFT join sys.extended_properties g  on a.object_id = g.major_id AND g.minor_id = 0
+											WHERE a.name=N'{TableName}'
+										) a1
+                                WHERE   s.name = N'dbo'
+                                        AND o.type IN ( 'U', 'S', 'V' )
+                                        AND o.name = N'{TableName}'
+                                        AND c.name Not IN('{ string.Join("','", strExclude)}')
+                                        ORDER BY c.column_id;";
+                List = con.Query<table_cto>(strSQL).ToList();
+                #endregion 查询字段list
+
+            #region 生成建表脚本
+            if (Code== "CreateScript")
+            {
+                List<string> strCreateTable = new List<string>();
+                List<string> strCreateComment = new List<string>();
+
+                strCreateTable.Add($"CREATE TABLE [dbo].[{List[0].TableName.Trim()}](");
+                strCreateComment.Add($"EXEC sp_addextendedproperty N'MS_Description', N'{List[0].TableComment}', 'SCHEMA', N'dbo', 'TABLE', N'{List[0].TableName}', NULL, NULL; ");
+                foreach (var item in List)
+                {
+                    string length = item.TypeName.Contains("varchar") ? $"({item.MaxLength.ToString()})" : "";
+                    strCreateTable.Add(string.Format($"[{item.ColumnName.Trim()}] {item.TypeName}{{0}} {{1}} {{2}},",
+                        length,
+                        item.NotNUll ? "Not Null" : "Null",
+                        item.DefaultValue?.Length > 0 ? $"'{item.DefaultValue}'" : ""
+                        ));
+                    strCreateComment.Add($"EXEC sp_addextendedproperty N'MS_Description', N'{item.Comment}', 'SCHEMA', N'dbo', 'TABLE', N'{List[0].TableName.Trim()}', 'COLUMN', N'{item.ColumnName.Trim()}'; ");
+                }
+                strCreateTable.Add(@"[Timestamp] [timestamp] NULL,
+                [SchoolID] [uniqueidentifier] NOT NULL,
+                [CreateUser] [nvarchar] (50) COLLATE Chinese_PRC_CI_AS NULL,
+                [CreateDate] [datetime] NULL,
+                [UpdateUser] [nvarchar] (50) COLLATE Chinese_PRC_CI_AS NULL,
+                [UpdateDate] [datetime] NULL,");
+                                strCreateTable.Add($"PRIMARY KEY ( [{List[0].ColumnName}] ));\r\n");
+                                strCreateComment.Add($@"EXEC sp_addextendedproperty N'MS_Description', N'时间戳', 'SCHEMA', N'dbo', 'TABLE', N'{List[0].TableName}', 'COLUMN', N'Timestamp' 
+                EXEC sp_addextendedproperty N'MS_Description', N'创建人', 'SCHEMA', N'dbo', 'TABLE', N'{List[0].TableName}', 'COLUMN', N'CreateUser' 
+                EXEC sp_addextendedproperty N'MS_Description', N'创建时间', 'SCHEMA', N'dbo', 'TABLE', N'{List[0].TableName}', 'COLUMN', N'CreateDate' 
+                EXEC sp_addextendedproperty N'MS_Description', N'修改人', 'SCHEMA', N'dbo', 'TABLE', N'{List[0].TableName}', 'COLUMN', N'UpdateUser' 
+                EXEC sp_addextendedproperty N'MS_Description', N'修改时间', 'SCHEMA', N'dbo', 'TABLE', N'{List[0].TableName}', 'COLUMN', N'UpdateDate' ");
+
+                    Content=string.Join("\r\n", strCreateTable) + string.Join("\r\n", strCreateComment);
+                }
+                #endregion 生成建表脚本
+
+            #region 生成实体
+            if (Code == "CreateEntity")
+            {
+                Content = strNormalEntity(List);
+            }
+            #endregion
+            }
+
+            ViewBag.Content = Content;
+            return View("~/Views/SqlServerSelect/ShowContent.cshtml");
+        }
+
+        //生成实体
+        public string strNormalEntity(List<table_cto> List)
+        {
+            List<string> sb = new List<string>();
+            sb.Add("using System;");
+            sb.Add("using ComponentModel;");
+            sb.Add("using System.Runtime.Serialization;");
+            sb.Add("using Entity.Base;");
+            sb.Add($"namespace PDRZ.Integration.Entity.School.{ List[0].TableName}_Cto");
+            sb.Add("{");
+            sb.Add("///<summary>");
+            sb.Add($" /// { List[0].TableName}_Cto");
+            sb.Add("/// </summary>");
+            //sb.Add("[DataContract]");
+            sb.Add("[Serializable]");
+            sb.Add($"[DataEntity(Alias = {List[0].TableName})]");
+            sb.Add(@"public partial class " + List[0].TableName);
+            sb.Add("{");
+            sb.Add("       #region 标准字段");
+            foreach (var item in List)
+            {
+                sb.Add("        /// <summary>");
+                sb.Add($"        /// {item.Comment}");
+                sb.Add("        /// </summary>");
+                //sb.Add("        [DataMember] ");
+                sb.Add($"        [Description(\"{item.Comment}\")] ");
+                sb.Add($"        public {item.CsharpType} {item.ColumnName} {{ get; set; }}");
+            }
+            sb.Add("        #endregion");
+            sb.Add("");
+            sb.Add("}");
+            sb.Add("}");
+            return string.Join("\r\n", sb);
+        }
+
     }
-
-
-
+    
 
     /// <summary>
     /// 数据库表查询

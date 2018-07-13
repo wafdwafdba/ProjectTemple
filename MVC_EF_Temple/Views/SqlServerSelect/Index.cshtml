@@ -22,6 +22,9 @@
         <a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" id="add">新增</a>
         <a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" id="edit">修改</a>
         <a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" id="del">删除</a>
+
+        <a href="#" class="easyui-linkbutton" iconCls="icon-more" plain="true" id="CreateScript">生成建表SQL脚本</a>
+        <a href="#" class="easyui-linkbutton" iconCls="icon-more" plain="true" id="CreateEntity">生成实体</a>
     </div>
 </div>
 <table id="dg" class="easyui-datagrid" title="数据库表查询" style="height:auto"> </table>
@@ -107,20 +110,48 @@
                 alert("请选择一条数据");
                 return false;
             }
-            if (confirm("确认删除吗")) {
+            IsDelMsg(("确认删除吗"),function a1(){
                 $.ajax({
                     url: "/SqlServerSelect/Delete?tableName=" + row.TableName,
                     type: "get",
                     async: false,
                     success: function (data) {
-                        //$('#dg').datagrid('reload');
-                        //alert(data.Message);
-                        ShowMsg(data.Message);
+                        ShowMsgSuccess(data.Message);
+                        $('#dg').datagrid('reload');
                     }
                 });
-            }
+              });
+
             
         })
+
+        //生成建表SQL脚本
+        $("#CreateScript").click(function () {
+            var row = $('#dg').datagrid('getSelected');
+            if (row != null && row.TableName.length > 0) {
+                strTitle = "生成SQL脚本";
+                strUrl = '/SqlServerSelect/ShowContent?TableName=' + row.TableName+'&Code=CreateScript';
+                showMessageDialog(strUrl, strTitle, "1200px", "700px")
+            }
+            else {
+                alert("请选择一条数据");
+            }
+        });
+
+        //生成实体
+        $("#CreateEntity").click(function () {
+            var row = $('#dg').datagrid('getSelected');
+            if (row != null && row.TableName.length > 0) {
+                strTitle = "生成实体";
+                strUrl = '/SqlServerSelect/ShowContent?TableName=' + row.TableName + '&Code=CreateEntity';
+                showMessageDialog(strUrl, strTitle, "1200px", "700px")
+            }
+            else {
+                alert("请选择一条数据");
+            }
+        });
+
+        
     });
 
     

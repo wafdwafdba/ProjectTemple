@@ -140,17 +140,11 @@
         </table>
     </div>
     <div class="layui-layer-btn layui-layer-btn- td2" style="text-align:center !important;width:100%;">
-        <a href="#" class="easyui-linkbutton" iconCls="icon-save" plain="true" onclick="Edit()">保存</a>
-        @*<a href="#" class="easyui-linkbutton Close" iconCls="icon-cancel" plain="true">关闭</a>*@
     </div>
 }
 
 <script type="text/javascript">
     $(function () {
-        //$(".Close").click(function () {
-        //    //window.close();
-        //    closeDialog();
-        //});
         //克隆表格行
         $("#addrow").click(function () {
             var tr = $("#tableList tbody  tr:last");                                 //tabtr是你要克隆的表格行的id
@@ -161,7 +155,6 @@
             });
             tr.after(newtr);                   //在id="tabtr"的表格行tr后插入克隆行newtr
         });
-
     });
 
     //删除表格行
@@ -170,47 +163,18 @@
         if (index!=1) {
             $(nowTr).parent().parent().remove();
         } else {
-            alert("表格第一行不能删除！");
+            ShowWaringMsg("表格第一行不能删除！");
         }
        
     }
 
-    function Edit() {
-        var Config = {};
-        if ($("#TableName").val() == "")
-        {
-            alert("表名必填.");
-            return false;
-        }
-
-        Config.TableName = $("#TableName").val();
-        Config.TableComment = $("#TableComment").val();
-
-        var tableList = getList();
-        if (tableList.length == 0)
-        {
-            alert("请至少录入一个字段.");
-            return false;
-        }
-
-        $.ajax({
-            url: "/SqlServerSelect/Savings",
-            type: "POST",
-            async: false,
-            data: { list: JSON.stringify(tableList), config: JSON.stringify(Config) },
-            success: function (data) {
-                //self.opener.location.reload();
-                //alert(data.Message);
-                //window.close();
-                ShowMsg(data.Message)
-               
-            }
-        });
+    //关闭
+    function close() { 
+        window.close();
     }
-
    
     //获取list
-    function getList() {
+    function getList(e) {
         var arr = [];
         var index = 1;
         $("#tableList tbody tr:gt(0)").each(function () {
@@ -219,11 +183,13 @@
 
             if (columnName == "")
             {
-                alert("第"+index+"行字段名称为空，请添加完在保存");
+                ShowWaringMsg("第" + index + "行字段名称为空，请添加完在保存")
+                e.preventDefault();
                 return false;
             }
             if (typeName == "") {
-                alert("第" + index + "行字段类型为空，请添加完在保存");
+                ShowWaringMsg("第" + index + "行字段类型为空，请添加完在保存")
+                e.preventDefault();
                 return false;
             }
             if (columnName != "" && typeName != "")
@@ -233,6 +199,45 @@
             
             index++;
         });
-        return arr;
+      return arr;
     }
+
+    //编辑
+    var Edit = function (e) {
+        var valueTag = [];
+        var flag = false;
+        var Config = {};
+        if ($("#TableName").val() == "") {
+            ShowWaringMsg("表名必填.");
+            return false;
+        }
+
+        Config.TableName = $("#TableName").val();
+        Config.TableComment = $("#TableComment").val();
+
+
+        var tableList = getList(e);
+        if (tableList.length == 0) {
+            ShowWaringMsg("请至少录入一个字段.");
+            return false;
+        }
+
+        $.ajax({
+            url: "/SqlServerSelect/Savings",
+            type: "POST",
+            async: false,
+            data: { list: JSON.stringify(tableList), config: JSON.stringify(Config) },
+            success: function (data) {
+                valueTag = [];
+                if (data.Flag == 1) {
+                    valueTag.push({ flag: true, Message: data.Message });
+                }
+                else
+                {
+                    valueTag.push({ flag: false, Message: data.Message });
+                }
+            }
+        });
+        return valueTag;
+    };
 </script>
